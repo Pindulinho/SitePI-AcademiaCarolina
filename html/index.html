@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Empréstimo de Livros</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="blur-background"></div>
+    <div class="container">
+        <form id="loanForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+
+            <label for="livro">Livro:</label>
+            <input type="text" id="livro" name="livro" required>
+
+            <label for="checarDevol">Devolução Checada:</label>
+            <select id="checarDevol" name="checarDevol" required>
+                <option value="true">Sim</option>
+                <option value="false">Não</option>
+            </select>
+
+            <label for="curso">Curso:</label>
+            <select id="curso" name="curso" required>
+                <option value="jogos digitais">Jogos Digitais</option>
+                <option value="adm">Administração</option>
+                <option value="eletronica">Eletrônica</option>
+                <option value="marketing">Marketing</option>
+                <option value="farmacia">Farmácia</option>
+                <option value="infonet">Infonet</option>
+                <option value="rh">Recursos Humanos</option>
+            </select>
+
+            <label for="serie">Série:</label>
+            <select id="serie" name="serie" required>
+                <option value="1a">1ª Série</option>
+                <option value="2a">2ª Série</option>
+                <option value="3a">3ª Série</option>
+            </select>
+
+            <label for="periodo">Período:</label>
+            <select id="periodo" name="periodo" required>
+                <option value="matutino">Matutino</option>
+                <option value="vespertino">Vespertino</option>
+                <option value="noturno">Noturno</option>
+            </select>
+
+            <label for="data_entre">Data de Entrega:</label>
+            <input type="date" id="data_entre" name="data_entre" required>
+
+            <label for="data_devol">Data de Devolução:</label>
+            <input type="date" id="data_devol" name="data_devol" required>
+
+            <button type="submit">Cadastrar Empréstimo</button>
+        </form>
+        <div id="successMessage" class="success-message"></div>
+    </div>
+
+<script>
+    document.getElementById('loanForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('http://localhost:8080/aluno/add', {
+            method: 'POST',
+            body: JSON.stringify({
+                nome: formData.get('nome'),
+                livro: formData.get('livro'),
+                checarDevol: formData.get('checarDevol') === 'true',
+                curso: formData.get('curso'),
+                serie: formData.get('serie'),
+                periodo: formData.get('periodo'),
+                data_entre: formData.get('data_entre'),
+                data_devol: formData.get('data_devol')
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data || data.id) {
+                document.getElementById('successMessage').textContent = 'Empréstimo cadastrado com sucesso!';
+                this.reset();
+            } else {
+                document.getElementById('successMessage').textContent = 'Erro ao cadastrar empréstimo.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('successMessage').textContent = 'Erro ao cadastrar empréstimo.';
+        });
+    });
+</script>
+</body>
+</html>

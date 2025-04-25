@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Status de Pendência</title>
+    <link rel="stylesheet" href="updateForm.css">
+</head>
+<body>
+<div class="container">
+    <form id="updateForm">
+        <label for="aluno_id">ID do Aluno:</label>
+        <input type="number" id="aluno_id" name="aluno_id" required>
+
+        <label for="checarDevol">Devolução Checada:</label>
+        <select id="checarDevol" name="checarDevol" required>
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+        </select>
+
+        <button type="submit">Atualizar Status</button>
+    </form>
+    <div id="successMessage" class="success-message"></div>
+</div>
+
+<script>
+    document.getElementById('updateForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const aluno_id = formData.get('aluno_id');
+
+        fetch(`http://localhost:8080/aluno/updateAluno/${aluno_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                checarDevol: formData.get('checarDevol') === 'true'
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data || data.id) {
+                document.getElementById('successMessage').textContent = 'Status de pendência atualizado com sucesso!';
+                this.reset();
+            } else {
+                document.getElementById('successMessage').textContent = 'Erro ao atualizar status de pendência.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('successMessage').textContent = 'Erro ao atualizar status de pendência.';
+        });
+    });
+</script>
+</body>
+</html>
